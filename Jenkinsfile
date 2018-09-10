@@ -1,4 +1,17 @@
 node {
+    // Get Artifactory server instance, defined in the Artifactory Plugin administration page.
+	def server = Artifactory.server "jfrog"
+	// Create an Artifactory Maven instance.
+	def rtMaven = Artifactory.newMavenBuild()
+	def buildInfo
+    
+    stage('Artifactory configuration') {
+		// Tool name from Jenkins configuration
+		rtMaven.tool = "maven3"
+		// Set Artifactory repositories for dependencies resolution and artifacts deployment.
+		rtMaven.deployer releaseRepo:'libs-release-local', snapshotRepo:'libs-snapshot-local', server: server
+		rtMaven.resolver releaseRepo:'libs-release', snapshotRepo:'libs-snapshot', server: server
+	}
     stage('Configure') {
         env.PATH = "${tool 'maven3'}/bin:${env.PATH}"
         version = '1.0.' + env.BUILD_NUMBER
@@ -10,9 +23,14 @@ node {
                 pipelineTriggers([[$class: 'GitHubPushTrigger']])
             ])
     }
-
+// This displays colors using the 'xterm' ansi color map.
+    ansiColor('xterm') {
+        // Just some echoes to show the ANSI color.
+        stage "\u001B[31mI'm Red\u001B[0m Now not"
+    }
+    
     stage('Checkout') {
-        git 'https://github.com/bertjan/spring-boot-sample'
+        git 'https://github.com/jijeesh/spring-boot-sample'
     }
 
     stage('Version') {
@@ -23,6 +41,13 @@ node {
     stage('Build') {
         sh 'mvn -B -V -U -e clean package'
     }
+    stage('Maven build') {
+		buildInfo = rtMaven.run pom: 'pom.xml', goals: 'clean install'
+	}
+
+	stage('Publish build info') {
+		server.publishBuildInfo buildInfo
+	}
 
     stage('Archive') {
         junit allowEmptyResults: true, testResults: '**/target/**/TEST*.xml'
