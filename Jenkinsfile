@@ -22,12 +22,13 @@ node {
 	// 	rtMaven.deployer releaseRepo:'libs-release-local', snapshotRepo:'libs-snapshot-local', server: server
 	// 	rtMaven.resolver releaseRepo:'libs-release', snapshotRepo:'libs-snapshot', server: server
 	// }
+	def mvnHome = tool 'maven3'
+ def jdkHome = tool 'jdk8'
 
 	stage('Configure') {
       //  env.PATH = "${tool 'maven3'}/bin:${env.PATH}"
 			//	env.PATH = "${tool 'jdk8'}/bin:${env.PATH}"
-				def mvnHome = tool 'maven3'
-       def jdkHome = tool 'jdk8'
+
 }
 
 stage ('Check Versions'){
