@@ -29,8 +29,13 @@ node {
 }
 
 stage ('Check Versions'){
-	sh "mvn -version"
-	sh "java version"
+	if (isUnix()) {
+		sh "mvn -version"
+		sh "java version"
+	}else {
+		bat "mvn -version"
+		bat "java version"
+	}
 }
 
     stage('Checkout') {
@@ -38,15 +43,25 @@ stage ('Check Versions'){
     }
 
     stage('Version') {
-        sh "echo \'\ninfo.build.version=\'$version >> src/main/resources/application.properties || true"
-        sh "mvn -B -V -U -e versions:set -DnewVersion=$version"
+				if (isUnix()) {
+	        sh "echo \'\ninfo.build.version=\'$version >> src/main/resources/application.properties || true"
+	        sh "mvn -B -V -U -e versions:set -DnewVersion=$version"
+				}else{
+					bat "echo \'\ninfo.build.version=\'$version >> src/main/resources/application.properties || true"
+				 bat "mvn -B -V -U -e versions:set -DnewVersion=$version"
+				}
     }
 
     stage('Build') {
-        sh 'mvn -B -V -U -e clean package'
+			if (isUnix) {
+				sh 'mvn -B -V -U -e clean package'
+			}else{
+				bat 'mvn -B -V -U -e clean package'
+			}
+
     }
     stage('Maven build') {
-		buildInfo = rtMaven.run pom: 'pom.xml', goals: 'clean install'
+		//buildInfo = rtMaven.run pom: 'pom.xml', goals: 'clean install'
 	}
 
 	stage('Publish build info') {
