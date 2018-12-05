@@ -38,9 +38,9 @@ stage ('Check Versions'){
 		sh "'${jdkHome}/bin/java' version"
 	}else {
 		echo "======================"
-		echo "${mvnHome}"
-		bat "'${mvnHome}/bin/mvn' -version"
-		bat "'${jdkHome}/bin/java' version"
+		//echo "${mvnHome}"
+		bat (/"${mvnHome}\bin\mvn" -version/)
+		bat (/"${jdkHome}\bin\java" version/)
 	}
 }
 
