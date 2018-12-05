@@ -24,17 +24,20 @@ node {
 	// }
 
 	stage('Configure') {
-        env.PATH = "${tool 'maven3'}/bin:${env.PATH}"
-				env.PATH = "${tool 'jdk8'}/bin:${env.PATH}"
+      //  env.PATH = "${tool 'maven3'}/bin:${env.PATH}"
+			//	env.PATH = "${tool 'jdk8'}/bin:${env.PATH}"
+				def mvnHome = tool 'maven3'
+       def jdkHome = tool 'jdk8'
 }
 
 stage ('Check Versions'){
 	if (isUnix()) {
-		sh "mvn -version"
-		sh "java version"
+
+		sh "'${mvnHome}/bin/mvn'-version"
+		sh "'${jdkHome}/bin/java' version"
 	}else {
-		bat "mvn -version"
-		bat "java version"
+		bat "'${mvnHome}/bin/mvn'-version"
+		bat "'${jdkHome}/bin/java' version"
 	}
 }
 
